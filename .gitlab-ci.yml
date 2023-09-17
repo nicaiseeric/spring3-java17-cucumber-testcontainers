@@ -1,0 +1,29 @@
+---
+stages:
+   - analyze-code
+   - build-jar
+
+variables:
+  DOCKER_AUTH_CONFIG: '{"auths":{"$CI_REGISTRY_NAME":{"username":"$CI_REGISTRY_USERNAME","password":"$CI_REGISTRY_PASSWORD"}}}'
+  DOCKER_ENTRYPOINT: ""
+  NODEPATH: $CI_PROJECT_DIR/.node
+
+.global_cache_maven:
+  cache:
+    key: one-key-to-rule-them-all-maven
+    paths:
+      - .m2/repository
+
+.global_cache_node:
+  cache:
+    key: one-key-to-rule-them-all-node
+    paths:
+      - ${NODEPATH}/node_modules/
+
+.rebuild_all_rules:
+  if_rebuild_all:
+    if: '$REBUILD_ALL && $CI_ENVIRONMENT_SLUG != ""'
+
+include:
+   - /cicd/.gitlab-ci.build.yml
+   - /cicd/.gitlab-ci.qa.yml

@@ -1,0 +1,23 @@
+---
+sonarqube-check:
+  stage: analyze-code
+  image:
+    name: maven:3.8-eclipse-temurin-17
+    entrypoint: [""]
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - mvn clean
+    - mvn dependency-check:aggregate -DskipTests --settings .m2/settings.xml
+    - mvn verify sonar:sonar -Dsonar.projectKey=nicaiseeric_spring3-java17-cucumber-testcontainers_PROJECT-KEY -Dsonar.projectName='spring3-java17-cucumber-testcontainers' --settings .m2/settings.xml
+  allow_failure: true
+  tags:
+    - vm_with_docker
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'dev'
+    - if: $CI_COMMIT_BRANCH == 'main'

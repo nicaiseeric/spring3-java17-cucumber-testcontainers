@@ -1,0 +1,44 @@
+---
+spring3-java17-cucumber-testcontainers-build-jar-snapshot:
+  stage: build-jar
+  image:
+    name: maven:3.8-eclipse-temurin-17
+    entrypoint: [""]
+  variables:
+    MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+    MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true -DskipTests -f pom.xml --settings .m2/settings.xml"
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .m2/repository
+  script:
+    - mvn $MAVEN_CLI_OPTS clean deploy
+  allow_failure: true
+  tags:
+    - docker
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'dev'
+
+spring3-java17-cucumber-testcontainers-build-jar-release:
+  stage: build-jar
+  image:
+    name: maven:3.8-eclipse-temurin-17
+    entrypoint: [""]
+  variables:
+    MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+    MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true -DskipTests -f pom.xml --settings .m2/settings.xml"
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .m2/repository
+  script:
+    - TAG="$(echo "${CI_COMMIT_TAG}" | cut -d / -f 2)"
+    - mvn $MAVEN_CLI_OPTS versions:set -DnewVersion=$TAG
+    - mvn $MAVEN_CLI_OPTS clean deploy
+  allow_failure: true
+  tags:
+    - docker
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^spring3-java17-cucumber-testcontainers\//'

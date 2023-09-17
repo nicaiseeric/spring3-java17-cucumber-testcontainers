@@ -1,0 +1,33 @@
+spring.config.import: optional:file:local/.env.local[.properties]
+cdr.source:
+  name: RS
+  retention: 7
+file.path:
+  raw: "target/test-classes/actual-input"
+  store: "target/test-classes/actual-output"
+  pattern:
+    dir: "yyyy/yyyy-MM/yyyy-MM-dd"
+    file: "*.gz"
+spring:
+  main:
+    banner-mode: off
+    web-application-type: none
+    allow-bean-definition-overriding: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+    properties.hibernate:
+      show-sql: true
+      use_sql_comments: true
+      format_sql: true
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dwh?currentSchema=public
+    username: datadigital
+    password: datadigital
+
+## uncomment to enable debug on spring-jpa and database queries by springboot
+#logging.level.org.hibernate:
+#  SQL: DEBUG
+#  type.descriptor.sql.BasicBinder: TRACE

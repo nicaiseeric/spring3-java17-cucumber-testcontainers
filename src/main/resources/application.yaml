@@ -1,0 +1,21 @@
+spring.config.import: optional:file:local/.env.local[.properties]
+cdr.source:
+  name: ${SOURCE_NAME}
+  retention: ${SOURCE_RETENTION}
+file.path:
+  raw: ${SOURCE_VOLUME}
+  store: ${SINK_VOLUME}
+  pattern:
+    dir: "yyyy/yyyy-MM/yyyy-MM-dd"
+    file: "*.gz"
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties.hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: ${DB_CONNEXION_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+

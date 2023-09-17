@@ -1,0 +1,8 @@
+spring-3
+java-17
+cucumber
+junit-jupiter
+assertj
+mockito
+testcontainer
+postgresql
